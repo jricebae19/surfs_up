@@ -32,6 +32,7 @@ session = Session(engine)
 app = Flask(__name__)
 
 #Add welcome statement
+@app.route("/")
 def welcome():
     return(
      '''   
@@ -42,3 +43,12 @@ def welcome():
     /api.v1.0/tobs
     /api.v1.0/temp/start/end
     ''')
+
+#Add precipitation route
+@app.route("/api/v1.0/precipitation")
+def precipitation():
+    prev_year = dt.date(2017, 8, 23) - dt.timedelta(days=365)
+    precipitation = session.query(Measurement.date, Measurement.prcp).\
+        filter(Measurement.date >= prev_year).all()
+    precip = {date: prcp for date, prcp in precipitation}
+    return jsonify(precip)
